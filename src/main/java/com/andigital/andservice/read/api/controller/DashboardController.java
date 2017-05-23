@@ -9,6 +9,7 @@ import java.util.List;
 import com.andigital.andservice.read.api.ANDRestServiceException;
 import com.andigital.andservice.read.api.domain.ErrorResponse;
 import com.andigital.andservice.read.api.domain.Project;
+import com.andigital.andservice.read.api.domain.RestResponse;
 import com.andigital.andservice.read.api.domain.SystemProperties;
 import com.andigital.andservice.read.api.services.ProjectsService;
 import com.andigital.andservice.read.api.services.SystemPropertiesService;
@@ -50,27 +51,29 @@ public class DashboardController {
 	 * Rest API to get Last System Updated Date
 	 */
 	@RequestMapping(value = "/systemProperties", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<SystemProperties> systemLastUpdatedDate() throws ANDRestServiceException {
+	public ResponseEntity<RestResponse> systemLastUpdatedDate() throws ANDRestServiceException {
 		SystemProperties systemProperties = null;
 		try {
 			List<SystemProperties> systemPropertiesList = systemPropertiesService.getSystemProperties();
 			if(systemPropertiesList ==null || systemPropertiesList.size() ==0){
 				// Error message.. no properties available
-				return null;
+				RestResponse restResponse = new RestResponse(false, null,"No System Properties are available",001);
+				return new ResponseEntity<RestResponse>(restResponse, HttpStatus.OK);
 			}else{
 				systemProperties = systemPropertiesList.get(0);
 				if(systemProperties ==null){
 					// Error message.. no properties available
-					return null;
+					RestResponse restResponse = new RestResponse(false, null,"No System Properties are available",001);
+					return new ResponseEntity<RestResponse>(restResponse, HttpStatus.OK);
 				}
 			}
 		} catch (Exception e) {
 			logger.error("Error in systemLastUpdatedDate {}", e);
-			//TODO:Handle excpetion and throws user friendly message with status code.
 			throw new ANDRestServiceException("Error in getting System Properties");
 		}
 
-		return new ResponseEntity<SystemProperties>(systemProperties, HttpStatus.OK);
+		RestResponse restResponse = new RestResponse(true, systemProperties,null,null);
+		return new ResponseEntity<RestResponse>(restResponse, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/projects", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
