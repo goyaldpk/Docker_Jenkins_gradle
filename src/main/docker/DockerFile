@@ -1,0 +1,18 @@
+FROM java:8
+
+#install Spring Boot artifact
+
+RUN mkdir -p/var/app/and-service-api
+
+WORKDIR var/app/and-service-api
+
+ADD andservice-read-api-0.0.1.jar andservice-read-api-0.0.1.jar
+
+RUN sh -c 'touch /andservice-read-api-0.0.1.jar'
+
+#profile is to passed Dynamically from Docker terminal (local,dev.....)
+#"-Djava.security.egd" is used to provide required delay that is taken by Docker container Switching.For more-: https://en.wikipedia.org/wiki//dev/random
+
+EXPOSE 8080
+
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=${profile}","-jar","/andservice-read-api-0.0.1.jar"]
